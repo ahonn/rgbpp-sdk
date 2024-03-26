@@ -89,6 +89,18 @@ export const buildBtcTimeCellsSpentTx = async ({
     witnesses.push(btcTimeWitness);
   }
 
+  const cellDepsMap = cellDeps.reduce((map, cellDep) => {
+    const { index, txHash } = cellDep.outPoint;
+    const key = `${cellDep.txHash}:${cellDep.index}`;
+    if (map[key]) {
+      return map;
+    }
+    map[key] = cellDep;
+    return map;
+  }, {});
+
+  cellDeps = Object.values(cellDepsMap);
+
   const ckbTx: CKBComponents.RawTransaction = {
     version: '0x0',
     cellDeps,
